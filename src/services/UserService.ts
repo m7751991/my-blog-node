@@ -1,13 +1,23 @@
+import { validate } from "class-validator";
 import connection from "../config/mysql";
+import { hashPassword } from "../utils/bcrypt";
 import UserModel, { UserModelType } from "../models/user.model";
 
 class UserService {
   static async createUser(user: UserModelType) {
-    const newUser = new UserModel(user);
-    const response = await connection.getRepository(UserModel).save(newUser);
-    console.log(response, "response");
-
-    return response;
+    const { username, password } = user;
+    const oneUser = await connection.getRepository(UserModel).findOne({ where: { username } });
+    if (oneUser) {
+      throw new Error("用户名已存在");
+    }
+    const hashedPassword = await hashPassword(password);
+    const model = new UserModel({ ...user, password: hashedPassword });
+    const errors = await validate(model);
+    if (errors.length > 0) {
+      throw new Error("验证失败: " + JSON.stringify(errors));
+    }
+    const result = await connection.getRepository(UserModel).save(model);
+    return result ?? null;
   }
 
   static async getAllUsers() {

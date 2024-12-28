@@ -1,5 +1,13 @@
 import { Entity, Column, PrimaryGeneratedColumn } from "typeorm";
 
+export type CategoryModelType = {
+  id: number;
+  name: string;
+  description?: string;
+  createdAt: Date;
+  updatedAt?: Date;
+};
+
 @Entity()
 class CategoryModel {
   @PrimaryGeneratedColumn()

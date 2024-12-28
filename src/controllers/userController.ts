@@ -7,12 +7,14 @@ class UserController {
   static async createUser(ctx: Context) {
     try {
       const body = ctx.request.body as UserModelType;
-      console.log(body, "body");
-
-      const user = await UserService.createUser(body);
-      ctx.sendResponse(HttpStatus.CREATED, { message: "创建新用户成功", data: user });
+      const result = await UserService.createUser(body);
+      if (result) {
+        ctx.sendResponse(HttpStatus.OK, { message: "注册成功", data: result });
+      } else {
+        ctx.sendResponse(HttpStatus.BAD_REQUEST, { message: "注册失败" });
+      }
     } catch (error) {
-      throw new Error("创建新用户失败" + error.message);
+      throw new Error("注册失败" + error.message);
     }
   }
 
