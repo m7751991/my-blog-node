@@ -1,6 +1,6 @@
 import Router from "koa-router";
 import { API_PREFIX } from "../config/constant";
-import UserController from "../controllers/userController"; // Import UserController
+import UserController from "../controllers/UserController"; // Import UserController
 
 export function registerRoutes(router: Router) {
   // Create a new user

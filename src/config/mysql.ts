@@ -30,6 +30,7 @@ connection
   })
   .catch((error) => {
     console.log("数据库连接失败", error);
+    process.exit(1);
   });
 
 export default connection;
