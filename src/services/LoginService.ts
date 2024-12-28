@@ -1,7 +1,7 @@
 import { sign } from "../utils/jwt";
 import connection from "../config/mysql";
 import UserModel, { UserModelType } from "../models/user.model";
-import { hashPassword } from "../utils/bcrypt";
+import { verifyPassword } from "../utils/bcrypt";
 import UserService from "./UserService";
 
 class LoginService {
@@ -10,11 +10,14 @@ class LoginService {
     if (!username || !password) {
       throw new Error("用户名或密码不能为空");
     }
+    console.log(username, password);
+
     const user = await connection.getRepository(UserModel).findOne({
-      where: { username, password: await hashPassword(password) },
+      where: { username },
     });
-    if (user) {
-      const token = sign({ id: user?.id, username: user?.username });
+
+    if (await verifyPassword(password, user?.password)) {
+      const token = sign({ id: user?.id });
       return { user, token };
     }
     return null;

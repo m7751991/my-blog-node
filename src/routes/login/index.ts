@@ -1,6 +1,6 @@
 import Router from "koa-router";
 import { API_PREFIX } from "../../config/constant";
-import LoginController from "../../controllers/LoginController"; // Import UserController
+import LoginController from "../../controllers/LoginController";
 
 export default function loginRoutes(router: Router) {
   // Get all users

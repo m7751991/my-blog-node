@@ -22,15 +22,22 @@ const ormconfig: DataSourceOptions = {
 };
 
 const connection = new DataSource(ormconfig);
-console.log("开始链接数据库");
-connection
-  .initialize()
-  .then(() => {
+// 添加关闭连接的函数
+export const closeDatabaseConnection = async () => {
+  await connection.destroy(); // 关闭连接
+  console.log("数据库连接已关闭");
+};
+
+// 初始化数据库连接
+export const initializeDatabase = async () => {
+  try {
+    console.log("开始链接数据库");
+    await connection.initialize();
     console.log("数据库连接成功");
-  })
-  .catch((error) => {
+  } catch (error) {
     console.log("数据库连接失败", error);
     process.exit(1);
-  });
+  }
+};
 
 export default connection;

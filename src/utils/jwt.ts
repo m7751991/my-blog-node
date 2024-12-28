@@ -1,8 +1,14 @@
+import zlib from "zlib";
 import jwt from "jsonwebtoken";
-const SECRET_KEY = "1234567890";
+const SECRET_KEY = "short";
 
 export const sign = (payload: any) => {
-  return jwt.sign({ ...payload, time: new Date().getTime() }, SECRET_KEY, { expiresIn: "1h" });
+  const jsonPayload = JSON.stringify(payload);
+  const compressedPayload = zlib.gzipSync(jsonPayload).toString("base64");
+  const token = jwt.sign({ data: compressedPayload }, SECRET_KEY, { expiresIn: "1h", algorithm: "HS256" });
+  console.log(token, "token");
+
+  return token;
 };
 
 export const verify = (token: string) => {
