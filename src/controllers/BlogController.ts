@@ -1,12 +1,14 @@
 import { Context } from "koa";
 import BlogService from "../services/BlogService"; // Assuming a BlogService exists
-import { BlogModelType } from "../models/blog.model"; // Assuming a BlogModelType exists
+import BlogModel from "../models/blog.model"; // Assuming a BlogModelType exists
 import { HttpStatus } from "../utils/responseHandler";
 
 class BlogController {
   static async createBlog(ctx: Context) {
+    console.log(ctx.request.body, "ctx.request.body");
+
     try {
-      const body = ctx.request.body as BlogModelType;
+      const body = ctx.request.body as BlogModel;
       const result = await BlogService.createBlog(body);
       if (result) {
         ctx.sendResponse(HttpStatus.OK, { message: "创建成功", data: result });
@@ -44,7 +46,7 @@ class BlogController {
   static async updateBlogById(ctx: Context) {
     try {
       const { id } = ctx.params;
-      const body = ctx.request.body as BlogModelType;
+      const body = ctx.request.body as BlogModel;
       const result = await BlogService.updateBlog(Number(id), body);
       ctx.sendResponse(HttpStatus.OK, { message: "更新成功", data: result });
     } catch (error) {

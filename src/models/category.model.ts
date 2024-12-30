@@ -1,13 +1,5 @@
 import { Entity, Column, PrimaryGeneratedColumn } from "typeorm";
 
-export type CategoryModelType = {
-  id: number;
-  name: string;
-  description?: string;
-  createdAt: Date;
-  updatedAt?: Date;
-};
-
 @Entity()
 class CategoryModel {
   @PrimaryGeneratedColumn()
@@ -19,11 +11,41 @@ class CategoryModel {
   @Column({ nullable: true })
   description?: string;
 
-  @Column({ default: () => "CURRENT_TIMESTAMP" })
-  createdAt!: Date;
+  @Column({
+    type: "bigint",
+    transformer: {
+      to: (value: number) => {
+        if (!!value) {
+          return BigInt(value);
+        }
+        console.log(Date.now(), "Date.now()");
 
-  @Column({ nullable: true })
-  updatedAt?: Date;
+        return BigInt(Date.now());
+      }, // 插入时转换为 bigint
+      from: (value: string) => Number(value), // 查询时转换为数字
+    },
+  })
+  createdAt!: bigint; // 将类型更改为 number，以存储时间戳
+
+  @Column({
+    nullable: true,
+    type: "bigint",
+    transformer: {
+      to: (value: number) => {
+        if (!!value) {
+          return BigInt(value);
+        }
+        return null;
+      }, // 插入时转换为 bigint
+      from: (value: string) => Number(value), // 查询时转换为数字
+    },
+  })
+  updatedAt: bigint; // 将类型更改为 number，以存储时间戳
+
+  constructor(params: CategoryModel) {
+    this.createdAt = Date.now() as unknown as bigint;
+    Object.assign(this, params);
+  }
 }
 
 export default CategoryModel;

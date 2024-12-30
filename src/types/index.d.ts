@@ -1,3 +1,4 @@
-// Type Definitions
-
-// Add your type definitions here
+export interface CategorySearchDataType {
+  name?: string;
+  id?: number;
+}

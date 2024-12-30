@@ -1,12 +1,12 @@
 import { Context } from "koa";
 import CategoryService from "../services/CategoryService";
-import { CategoryModelType } from "../models/category.model";
+import CategoryModel from "../models/category.model";
 import { HttpStatus } from "../utils/responseHandler";
-
+import { CategorySearchDataType } from "../types";
 class CategoryController {
   static async createCategory(ctx: Context) {
     try {
-      const body = ctx.request.body as CategoryModelType;
+      const body = ctx.request.body as CategoryModel;
       const result = await CategoryService.createCategory(body);
       if (result) {
         ctx.sendResponse(HttpStatus.OK, { message: "分类创建成功", data: result });
@@ -20,7 +20,10 @@ class CategoryController {
 
   static async getAllCategories(ctx: Context) {
     try {
-      const categories = await CategoryService.getAllCategories();
+      const searchData = ctx.request.query as CategorySearchDataType;
+      console.log(searchData, "searchData");
+
+      const categories = await CategoryService.getAllCategories(searchData);
       ctx.sendResponse(HttpStatus.OK, { message: "获取分类成功", data: categories });
     } catch (error) {
       throw new Error("获取分类失败: " + error.message);
@@ -44,8 +47,10 @@ class CategoryController {
   static async updateCategoryById(ctx: Context) {
     try {
       const { id } = ctx.params;
-      const body = ctx.request.body as CategoryModelType;
-      const result = await CategoryService.updateCategory(Number(id), body);
+      const body = ctx.request.body as CategoryModel;
+      console.log(body, "body");
+      const cModel = new CategoryModel(body);
+      const result = await CategoryService.updateCategory(Number(id), cModel);
       ctx.sendResponse(HttpStatus.OK, { message: "分类更新成功", data: result });
     } catch (error) {
       throw new Error("分类更新失败: " + error.message);

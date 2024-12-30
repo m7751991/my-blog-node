@@ -17,8 +17,6 @@ interface ResponseData {
 }
 
 export function sendResponse(ctx: Context, status: HttpStatus, data: ResponseData) {
-  console.log(data, "data");
-
   ctx.status = status;
-  ctx.body = { code: status, ...data };
+  ctx.body = { code: status, status: [HttpStatus.OK, HttpStatus.CREATED].includes(status), ...data };
 }

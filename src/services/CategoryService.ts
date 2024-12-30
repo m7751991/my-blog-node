@@ -1,15 +1,22 @@
-import { CategoryModelType } from "../models/category.model";
 import CategoryModel from "../models/category.model";
 import connection from "../config/mysql";
+import { CategorySearchDataType } from "../types";
+import { Like } from "typeorm";
 
 export default class CategoryService {
-  static async createCategory(category: CategoryModelType) {
+  static async createCategory(category: CategoryModel) {
     const result = await connection.getRepository(CategoryModel).save(category);
     return result;
   }
 
-  static async getAllCategories() {
-    const result = await connection.getRepository(CategoryModel).find({ order: { createdAt: "DESC" } });
+  static async getAllCategories(searchData: CategorySearchDataType) {
+    const result = await connection.getRepository(CategoryModel).find({
+      where: {
+        name: searchData.name ? Like(`%${searchData.name}%`) : undefined,
+        id: searchData.id ? searchData.id : undefined,
+      },
+      order: { createdAt: "DESC" },
+    });
     return result;
   }
   static async getCategoryById(id: number) {
@@ -20,7 +27,7 @@ export default class CategoryService {
     return result;
   }
 
-  static async updateCategory(id: number, category: CategoryModelType) {
+  static async updateCategory(id: number, category: CategoryModel) {
     if (!id) {
       throw new Error("id不存在");
     }

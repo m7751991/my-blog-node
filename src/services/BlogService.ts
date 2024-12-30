@@ -1,9 +1,9 @@
-import BlogModel, { BlogModelType } from "../models/blog.model"; // Assuming a BlogModelType exists
+import BlogModel from "../models/blog.model"; // Assuming a BlogModelType exists
 import { validate } from "class-validator";
 import connection from "../config/mysql";
 
 class BlogService {
-  static async createBlog(blogData: BlogModelType) {
+  static async createBlog(blogData: BlogModel) {
     const blog = new BlogModel(blogData);
     const errors = await validate(blog);
     if (errors.length > 0) {
@@ -28,7 +28,7 @@ class BlogService {
     return await connection.getRepository(BlogModel).findOne({ where: { id } });
   }
 
-  static async updateBlog(id: number, blogData: BlogModelType) {
+  static async updateBlog(id: number, blogData: BlogModel) {
     if (!id) {
       throw new Error("id不能为空");
     }

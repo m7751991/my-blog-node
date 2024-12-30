@@ -12,11 +12,11 @@ class LoginService {
     }
     console.log(username, password);
 
-    const user = await connection.getRepository(UserModel).findOne({
+    const { password: userPassword, ...user } = await connection.getRepository(UserModel).findOne({
       where: { username },
     });
 
-    if (await verifyPassword(password, user?.password)) {
+    if (await verifyPassword(password, userPassword)) {
       const token = sign({ id: user?.id });
       return { user, token };
     }

@@ -21,17 +21,17 @@ app.use(async (ctx, next) => {
 });
 app.use(cors());
 app.use(bodyParser());
-app.use(logger);
 app.use(errorHandler);
 app.use(authFilter);
+app.use(logger);
 
 // Register routes
 app.use(routes.routes()).use(routes.allowedMethods());
 
 // Start ser
 const getPort = () => {
-  const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
-  return port >= 3000 && port <= 4000 ? port : 3000;
+  const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 3333;
+  return port >= 3000 && port <= 4000 ? port : 3333;
 };
 
 const PORT = getPort();

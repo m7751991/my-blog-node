@@ -17,7 +17,8 @@ class UserService {
       throw new Error("验证失败: " + JSON.stringify(errors));
     }
     const result = await connection.getRepository(UserModel).save(model);
-    return result ?? null;
+    const { password: pw, ...rest } = result;
+    return rest ?? null;
   }
 
   static async getAllUsers() {
