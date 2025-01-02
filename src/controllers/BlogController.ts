@@ -5,8 +5,6 @@ import { HttpStatus } from "../utils/responseHandler";
 
 class BlogController {
   static async createBlog(ctx: Context) {
-    console.log(ctx.request.body, "ctx.request.body");
-
     try {
       const body = ctx.request.body as BlogModel;
       const result = await BlogService.createBlog(body);
@@ -22,7 +20,18 @@ class BlogController {
 
   static async getAllBlogs(ctx: Context) {
     try {
-      const blogs = await BlogService.getAllBlogs();
+      const { query, url } = ctx.request;
+      const blogs = await BlogService.searchBlogs(query, false);
+      ctx.sendResponse(HttpStatus.OK, { message: "获取成功", data: blogs });
+    } catch (error) {
+      throw new Error("获取失败: " + error.message);
+    }
+  }
+
+  static async searchBlogs(ctx: Context) {
+    try {
+      const { query, url } = ctx.request;
+      const blogs = await BlogService.searchBlogs(query, true);
       ctx.sendResponse(HttpStatus.OK, { message: "获取成功", data: blogs });
     } catch (error) {
       throw new Error("获取失败: " + error.message);
@@ -32,7 +41,8 @@ class BlogController {
   static async getBlogById(ctx: Context) {
     try {
       const { id } = ctx.params;
-      const blog = await BlogService.getBlogById(Number(id));
+      const fromClient = ctx.request.url.includes("admin");
+      const blog = await BlogService.getBlogById(Number(id), fromClient);
       if (blog) {
         ctx.sendResponse(HttpStatus.OK, { message: "获取成功", data: blog });
       } else {
@@ -47,6 +57,9 @@ class BlogController {
     try {
       const { id } = ctx.params;
       const body = ctx.request.body as BlogModel;
+      console.log(body, "body");
+
+      body.updatedAt = Date.now();
       const result = await BlogService.updateBlog(Number(id), body);
       ctx.sendResponse(HttpStatus.OK, { message: "更新成功", data: result });
     } catch (error) {
@@ -59,9 +72,9 @@ class BlogController {
       const { id } = ctx.params;
       const result = await BlogService.deleteBlog(Number(id));
       if (result) {
-        ctx.sendResponse(HttpStatus.OK, { message: "删除成功", data: id });
+        ctx.sendResponse(HttpStatus.OK, { message: "删除成功", data: Number(id) });
       } else {
-        ctx.sendResponse(HttpStatus.NOT_FOUND, { message: "博客不存在" });
+        ctx.sendResponse(HttpStatus.NOT_FOUND, { message: "博客不存在", data: Number(id) });
       }
     } catch (error) {
       throw new Error("删除失败: " + error.message);

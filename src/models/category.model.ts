@@ -1,7 +1,9 @@
-import { Entity, Column, PrimaryGeneratedColumn } from "typeorm";
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from "typeorm";
+import BlogModel from "./blog.model";
+import { CategoryModelType } from "../types";
 
 @Entity()
-class CategoryModel {
+class CategoryModel implements CategoryModelType {
   @PrimaryGeneratedColumn()
   id!: number;
 
@@ -18,14 +20,12 @@ class CategoryModel {
         if (!!value) {
           return BigInt(value);
         }
-        console.log(Date.now(), "Date.now()");
-
         return BigInt(Date.now());
-      }, // 插入时转换为 bigint
-      from: (value: string) => Number(value), // 查询时转换为数字
+      },
+      from: (value: string) => Number(value),
     },
   })
-  createdAt!: bigint; // 将类型更改为 number，以存储时间戳
+  createdAt!: bigint;
 
   @Column({
     nullable: true,
@@ -35,15 +35,21 @@ class CategoryModel {
         if (!!value) {
           return BigInt(value);
         }
-        return null;
-      }, // 插入时转换为 bigint
-      from: (value: string) => Number(value), // 查询时转换为数字
+        return BigInt(Date.now());
+      },
+      from: (value: string) => Number(value),
     },
   })
-  updatedAt: bigint; // 将类型更改为 number，以存储时间戳
+  updatedAt?: bigint;
+
+  @OneToMany(() => BlogModel, (blog: BlogModel) => blog.categoryId)
+  blogs: BlogModel[];
+
+  @Column({ default: 0 })
+  blogCount: number;
 
   constructor(params: CategoryModel) {
-    this.createdAt = Date.now() as unknown as bigint;
+    this.createdAt = BigInt(Date.now());
     Object.assign(this, params);
   }
 }

@@ -3,7 +3,7 @@ import { verify } from "../utils/jwt";
 
 const authFilter = async (ctx: Context, next: Next) => {
   const token = ctx.request.headers.authorization;
-  const pathList = ["/api/v1/login", "/api/v1/users", "/api/v1/blogs"];
+  const pathList = ["/api/v1/login", "/api/v1/users", "/api/v1/blogs/search", "/api/v1/category"];
   const isDynamicRoute = ctx.request.path.match(/\/api\/v1\/blogs\/\d+/);
 
   const error = {
@@ -18,6 +18,7 @@ const authFilter = async (ctx: Context, next: Next) => {
   }
   // 如果没有 token，抛出未登录错误
   if (!token) {
+    console.log(ctx.request.path, "未登录");
     throw {
       message: "未登录",
       status: 401,
